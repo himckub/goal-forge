@@ -1,5 +1,7 @@
 # goal-forge
 
+![Goal Forge cover](assets/readme-cover.svg)
+
 Codex skill that turns a rough coding idea into a Codex `/goal`-ready contract.
 
 Pipeline: **rough idea → interviewed `SPEC.md` → tightened `SPEC.md` → `GOAL.md` → config readiness check**.
