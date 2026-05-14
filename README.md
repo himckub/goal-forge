@@ -4,11 +4,17 @@ Codex skill that turns a rough coding idea into a Codex `/goal`-ready contract.
 
 Pipeline: **rough idea → interviewed `SPEC.md` → tightened `SPEC.md` → `GOAL.md` → config readiness check**.
 
+Goal Forge now treats long-running `/goal` work as a runtime system with three explicit parts:
+
+- **Scorecard** — the metric, checklist, threshold, regression checks, and stop condition Codex should use to judge progress.
+- **Feedback loop** — the fastest representative check Codex can run repeatedly while iterating, plus the slower final check used before completion.
+- **Working memory** — markdown files such as `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md` that keep multi-hour runs coherent across context compaction.
+
 ## Modes
 
 - **Interview** — open-ended interview that forces decisions on scope, architecture, edge cases, verification. Hard gate: spec is not "done" until `done_when` has user-approved measurable criteria.
 - **Tighten** — read `SPEC.md` skeptically; surface ambiguities with two interpretations + a recommendation.
-- **Compile** — emit `GOAL.md` using the XML block structure in `references/goal_prompt_blocks.md`. Weak specs route back to Interview/Tighten.
+- **Compile** — emit `GOAL.md` using the XML block structure in `references/goal_prompt_blocks.md`. Weak specs route back to Interview/Tighten, especially when scorecard, feedback loop, or long-run working memory are missing.
 - **Check config** — run `scripts/inspect_codex_config.py` for a read-only report on Codex version, project trust, and the full autonomous `/goal` config.
 
 ## Install
@@ -57,9 +63,10 @@ goal-forge/
 ├── SKILL.md
 ├── agents/openai.yaml                       UI metadata + implicit invocation
 ├── references/
-│   ├── goal_prompt_blocks.md                GOAL.md XML structure
+│   ├── goal_prompt_blocks.md                GOAL.md XML structure, including scorecard, feedback loop, and working memory
 │   ├── config_checklist.md                  Long-running /goal config notes
-│   └── standard_execution_rules.md          Compile-time execution rules
+│   ├── standard_execution_rules.md          Compile-time execution rules
+│   └── working_memory_templates.md          PLAN.md, ATTEMPTS.md, and NOTES.md scaffolds
 └── scripts/
     └── inspect_codex_config.py              Read-only config readiness report
 ```

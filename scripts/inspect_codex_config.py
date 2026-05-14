@@ -208,7 +208,7 @@ def main() -> int:
     print("- Use model_reasoning_effort=high for execution and plan_mode_reasoning_effort=xhigh for planning.")
     print("- model_auto_compact_token_limit=997500 lets long /goal sessions compact before the context limit.")
     print("- Use approval_policy=never and sandbox_mode=danger-full-access only in explicitly trusted project directories.")
-    print("- Do not start a long goal until SPEC.md has user-approved measurable done_when criteria.")
+    print("- Do not start a long goal until SPEC.md has user-approved measurable done_when criteria, a scorecard, a fast feedback loop, and working-memory files when needed.")
     return 0
 
 

@@ -15,13 +15,25 @@ Use this structure for `GOAL.md`.
 [Architecture rules, non-goals, risk boundaries, and anti-pattern fences.]
 </constraints>
 
+<scorecard>
+[How the agent scores progress during the run: primary metric or checklist, passing threshold, regression checks, scoring command or inspection path, and stop condition.]
+</scorecard>
+
 <done_when>
 [Concrete user-approved completion criteria. Tests, artifacts, behavior, and explicit non-regression checks.]
 </done_when>
 
+<feedback_loop>
+[Fast representative checks to run while iterating: command/check, expected runtime, cadence, proxy validity, and slower escalation check.]
+</feedback_loop>
+
 <workflow>
 [Step-by-step execution order. Identify which reads/searches can run in parallel and where verification gates belong.]
 </workflow>
+
+<working_memory>
+[Markdown files the agent must create or maintain during long runs, such as PLAN.md, ATTEMPTS.md, and NOTES.md, plus when to update each one.]
+</working_memory>
 
 <verification_loop>
 [Commands and manual checks to run after major changes. Include fallback instructions when a check cannot run.]
@@ -46,9 +58,15 @@ Save only the XML block body in `GOAL.md`. The user can run or paste it after th
 
 `<constraints>` should prevent shortcuts that could pass tests while violating intent. Include non-goals here.
 
+`<scorecard>` should make loop evaluation explicit. Name the primary metric or checklist, the pass threshold, the regression checks, the exact scoring command or inspection path, and the stop condition. If the score depends on model judgment, provide a checklist or rubric so the judgment is auditable.
+
 `<done_when>` is the termination contract. It must be concrete enough that the agent can decide whether to call the task complete.
 
+`<feedback_loop>` should define the fastest useful check the agent can run repeatedly while working. Include expected runtime, when to run it, why it is representative enough, and what slower check must run before final completion.
+
 `<workflow>` should sequence the work in phases: inspect, plan, implement, verify, refine, final review.
+
+`<working_memory>` should be present for goals that may run for hours, involve repeated experiments, or require many context compactions. Prefer `PLAN.md` for the current plan, `ATTEMPTS.md` for tried approaches and results, and `NOTES.md` for chronological discoveries and blockers. For short linear goals, explicitly say working-memory files are not required.
 
 `<verification_loop>` should include focused checks first, then broad checks. If manual QA is required, specify what evidence is sufficient.
 
