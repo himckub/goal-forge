@@ -9,6 +9,9 @@ Use this checklist when preparing long-running Codex `/goal` work.
 - Git status is understood before the run starts.
 - The working tree does not contain unrelated risky changes.
 - The spec has user-approved measurable `done_when` criteria.
+- The goal has a scorecard with a metric or checklist, threshold, regression checks, scoring method, and stop condition.
+- The goal has a fast feedback loop, or an explicit reason repeated scoring must use a slower cadence.
+- Long-running or exploratory goals have working-memory files such as `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md`, or repo-specific equivalents.
 - Verification commands are known and can run without interactive prompts.
 
 ## Autonomous /goal Settings

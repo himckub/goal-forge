@@ -10,11 +10,17 @@ Goal Forge converts a rough coding idea into an executable Codex `/goal` contrac
 Default pipeline:
 
 1. Interview rough intent into `SPEC.md`.
-2. Tighten `SPEC.md` until scope and verification are concrete.
+2. Tighten `SPEC.md` until scope, scoring, feedback, and verification are concrete.
 3. Compile `SPEC.md` into `GOAL.md`.
 4. Check Codex config readiness before running `/goal`.
 
 Use this skill for coding and repo work first. If the task is mostly exploratory, research-only, security-critical, or lacks verifiable completion criteria, keep the user in the loop instead of compiling a `/goal`.
+
+Long-running goals need a runtime harness, not just a task description. Every `/goal` contract should make three things explicit:
+
+- **Scorecard**: how Codex repeatedly scores progress toward the goal.
+- **Feedback loop**: the fastest representative check Codex can run while iterating.
+- **Working memory**: markdown files Codex maintains so multi-hour runs do not rely only on conversation context.
 
 ## Modes
 
@@ -31,14 +37,22 @@ When the user gives a rough idea or asks to create a spec:
 
 1. Read the existing `SPEC.md` if present. Otherwise treat the rough idea as the interview seed; do not draft `SPEC.md` until step 6.
 2. Interview the user in detail before finalizing the spec.
-3. Ask about anything relevant: technical implementation, UI/UX, architecture, data model, edge cases, tradeoffs, rollout, verification, risks, and non-goals.
+3. Ask about anything relevant: technical implementation, UI/UX, architecture, data model, edge cases, tradeoffs, rollout, scoring, feedback-loop speed, verification, risks, and non-goals.
 4. Do not ask obvious checklist questions. Ask questions that force decisions or expose hidden ambiguity.
 5. Continue interviewing until the spec is complete enough to compile into an executable `/goal`.
 6. Then write or update `SPEC.md`.
 
 Use structured user-question tooling when available. If it is not available, ask concise batches of questions in chat. Keep each batch focused on unresolved blockers.
 
-Hard gate: do not compile a `/goal` prompt until `done_when` contains concrete, user-approved success criteria. After the interview has covered scope, architecture, and verification, Codex may propose candidate `done_when` criteria as a starting point. The user must confirm or edit product and acceptance criteria before the spec is considered complete.
+Hard gate: do not compile a `/goal` prompt until `done_when` contains concrete, user-approved success criteria. After the interview has covered scope, architecture, scoring, and verification, Codex may propose candidate `done_when` criteria as a starting point. The user must confirm or edit product and acceptance criteria before the spec is considered complete.
+
+For long-running or exploratory goals, also identify:
+
+- the primary score or checklist Codex should optimize
+- the threshold or stop condition that means the goal is complete
+- the fastest useful check Codex can run repeatedly while working
+- the slower final check required before completion
+- whether Codex should create or maintain `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md`
 
 ## Tighten Mode
 
@@ -62,17 +76,22 @@ The tightened spec should include:
 - files, modules, or systems likely involved
 - explicit edge cases
 - risk boundaries
+- scorecard with metric, threshold, regression checks, and stop condition
+- fast feedback loop with expected runtime and proxy validity
+- working-memory files for long-running goals
 - verification commands or manual checks
 - user-approved `done_when` criteria
 
 ## Compile Mode
 
-Compile `SPEC.md` into `GOAL.md` using the block structure in `references/goal_prompt_blocks.md`. Load `references/standard_execution_rules.md` for default `<execution_rules>` content.
+Compile `SPEC.md` into `GOAL.md` using the block structure in `references/goal_prompt_blocks.md`. Load `references/standard_execution_rules.md` for default `<execution_rules>` content. If scaffolding long-run tracking files, load `references/working_memory_templates.md`.
 
 Before writing `GOAL.md`, reject weak specs that lack:
 
 - measurable `done_when`
+- a scorecard for how Codex evaluates progress during the run
 - scope boundaries or non-goals
+- a fast feedback loop, or an explicit reason one is impossible
 - concrete verification commands or checks
 - enough context for an agent to start reading the repo
 
@@ -80,13 +99,22 @@ If the spec is weak, route the user back to Interview or Tighten mode with a spe
 
 Concrete gate: each `done_when` item must name a command, file artifact, or user-observable behavior. Otherwise mark it as weak and ask for clarification.
 
+Scorecard gate: each `scorecard` must name the primary metric or checklist, the passing threshold, regression checks, the scoring command or inspection path, and the stop condition. If the score is model-judged, require a checklist or rubric that makes the judgment auditable.
+
+Feedback-loop gate: each `feedback_loop` must name a fast check, expected runtime, run cadence, why the proxy is representative enough, and the slower escalation or final check. If the only available check is slow, say so explicitly and adjust the workflow cadence.
+
+Working-memory gate: if the goal may run for hours, involves repeated experiments, or has high context churn, include a `working_memory` block. Prefer `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md` unless the repo already has equivalent files. If no working-memory files are needed, state why the goal is short and linear enough to skip them.
+
 Map the spec into the goal blocks:
 
 - spec summary -> `<goal>`
 - relevant files/modules/discovery commands -> `<context>`
 - architecture rules, non-goals, anti-patterns -> `<constraints>`
+- scoring metric, threshold, regression checks, stop condition -> `<scorecard>`
 - acceptance criteria -> `<done_when>`
+- fast iterative check and slower escalation check -> `<feedback_loop>`
 - implementation phases -> `<workflow>`
+- long-run tracking files and update cadence -> `<working_memory>`
 - test/build/manual checks -> `<verification_loop>`
 - `references/standard_execution_rules.md` plus repo-specific rules -> `<execution_rules>`
 - final artifacts and completion signal -> `<output_contract>`
@@ -94,6 +122,9 @@ Map the spec into the goal blocks:
 After writing `GOAL.md`, self-check it:
 
 - `done_when` is measurable and user-approved
+- `scorecard` tells Codex how to score progress and stop
+- `feedback_loop` is fast enough to run repeatedly, or its limits are explicit
+- `working_memory` is present for long-running or exploratory work
 - context names files or discovery commands
 - constraints prevent obvious shortcuts
 - verification is executable or explicitly manual
@@ -130,6 +161,7 @@ Depending on the request, produce one or more of:
 
 - updated `SPEC.md`
 - generated `GOAL.md`
+- optional `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md` scaffolds for long-running goals
 - config readiness report
 - the exact `/goal` prompt body to paste into Codex
 
