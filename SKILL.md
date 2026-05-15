@@ -16,11 +16,12 @@ Default pipeline:
 
 Use this skill for coding and repo work first. If the task is mostly exploratory, research-only, security-critical, or lacks verifiable completion criteria, keep the user in the loop instead of compiling a `/goal`.
 
-Long-running goals need a runtime harness, not just a task description. Every `/goal` contract should make three things explicit:
+Long-running goals need a runtime harness, not just a task description. Every `/goal` contract should make four things explicit:
 
 - **Scorecard**: how Codex repeatedly scores progress toward the goal.
 - **Feedback loop**: the fastest representative check Codex can run while iterating.
 - **Working memory**: markdown files Codex maintains so multi-hour runs do not rely only on conversation context.
+- **Human control surface**: small, task-specific knobs and sidecar inputs the user can inspect or adjust while the goal runs.
 
 ## Modes
 
@@ -53,6 +54,7 @@ For long-running or exploratory goals, also identify:
 - the fastest useful check Codex can run repeatedly while working
 - the slower final check required before completion
 - whether Codex should create or maintain `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md`
+- what the user may need to observe or tune while the goal runs, such as phase/status visibility, scope limits, resource budgets, review gates, sidecar inputs, or pivot approvals
 
 ## Tighten Mode
 
@@ -79,12 +81,13 @@ The tightened spec should include:
 - scorecard with metric, threshold, regression checks, and stop condition
 - fast feedback loop with expected runtime and proxy validity
 - working-memory files for long-running goals
+- a minimal human control surface when the user may need visibility or steering during the run
 - verification commands or manual checks
 - user-approved `done_when` criteria
 
 ## Compile Mode
 
-Compile `SPEC.md` into `GOAL.md` using the block structure in `references/goal_prompt_blocks.md`. Load `references/standard_execution_rules.md` for default `<execution_rules>` content. If scaffolding long-run tracking files, load `references/working_memory_templates.md`.
+Compile `SPEC.md` into `GOAL.md` using the block structure in `references/goal_prompt_blocks.md`. Load `references/standard_execution_rules.md` for default `<execution_rules>` content. If scaffolding long-run tracking files, load `references/working_memory_templates.md`. If the goal benefits from human steering during a long run, load `references/control_surface_templates.md`.
 
 Before writing `GOAL.md`, reject weak specs that lack:
 
@@ -105,6 +108,8 @@ Feedback-loop gate: each `feedback_loop` must name a fast check, expected runtim
 
 Working-memory gate: if the goal may run for hours, involves repeated experiments, or has high context churn, include a `working_memory` block. Prefer `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md` unless the repo already has equivalent files. If no working-memory files are needed, state why the goal is short and linear enough to skip them.
 
+Human-control gate: if a goal may run while the user or another Codex session reviews in parallel, may consume scarce resources, may require strategic pivots, or may benefit from human priority changes, include a `human_control_surface` block and scaffold a compact `CONTROL.md`. Keep `CONTROL.md` small: only include knobs relevant to this goal. Do not create a second `GOAL.md` full of static instructions.
+
 Map the spec into the goal blocks:
 
 - spec summary -> `<goal>`
@@ -115,6 +120,7 @@ Map the spec into the goal blocks:
 - fast iterative check and slower escalation check -> `<feedback_loop>`
 - implementation phases -> `<workflow>`
 - long-run tracking files and update cadence -> `<working_memory>`
+- user-visible status, tunable knobs, sidecar inputs, and pivot/resource gates -> `<human_control_surface>`
 - test/build/manual checks -> `<verification_loop>`
 - `references/standard_execution_rules.md` plus repo-specific rules -> `<execution_rules>`
 - final artifacts and completion signal -> `<output_contract>`
@@ -125,6 +131,7 @@ After writing `GOAL.md`, self-check it:
 - `scorecard` tells Codex how to score progress and stop
 - `feedback_loop` is fast enough to run repeatedly, or its limits are explicit
 - `working_memory` is present for long-running or exploratory work
+- `human_control_surface` is present when the user needs visibility or tuning knobs during a long run, and absent when it would be ceremony
 - context names files or discovery commands
 - constraints prevent obvious shortcuts
 - verification is executable or explicitly manual
@@ -162,6 +169,7 @@ Depending on the request, produce one or more of:
 - updated `SPEC.md`
 - generated `GOAL.md`
 - optional `PLAN.md`, `ATTEMPTS.md`, and `NOTES.md` scaffolds for long-running goals
+- optional `CONTROL.md` scaffold for long-running goals that need human visibility or tuning knobs
 - config readiness report
 - the exact `/goal` prompt body to paste into Codex
 

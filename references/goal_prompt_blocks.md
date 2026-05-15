@@ -35,6 +35,10 @@ Use this structure for `GOAL.md`.
 [Markdown files the agent must create or maintain during long runs, such as PLAN.md, ATTEMPTS.md, and NOTES.md, plus when to update each one.]
 </working_memory>
 
+<human_control_surface>
+[Optional. Human-visible status, task-specific knobs, sidecar inputs, and decision/resource gates the agent must reread before phase changes or strategic pivots.]
+</human_control_surface>
+
 <verification_loop>
 [Commands and manual checks to run after major changes. Include fallback instructions when a check cannot run.]
 </verification_loop>
@@ -67,6 +71,8 @@ Save only the XML block body in `GOAL.md`. The user can run or paste it after th
 `<workflow>` should sequence the work in phases: inspect, plan, implement, verify, refine, final review.
 
 `<working_memory>` should be present for goals that may run for hours, involve repeated experiments, or require many context compactions. Prefer `PLAN.md` for the current plan, `ATTEMPTS.md` for tried approaches and results, and `NOTES.md` for chronological discoveries and blockers. For short linear goals, explicitly say working-memory files are not required.
+
+`<human_control_surface>` should be present when the user may need to monitor, steer, pause, or constrain a long-running goal without rewriting the whole goal. Keep it minimal and task-specific. Include where the agent reports status, which knobs the user may edit, when the agent must reread them, sidecar inputs it may consume, and which strategic pivots require explicit approval. Omit this block for short linear tasks where it would add ceremony.
 
 `<verification_loop>` should include focused checks first, then broad checks. If manual QA is required, specify what evidence is sufficient.
 
